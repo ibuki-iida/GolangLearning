@@ -1,3 +1,12 @@
+/*　
+	このシステムはウォータサーバーを再現したシステムです。
+	水やお湯を出し、タンクが空になれば補充を促し、補充する流れになっています。
+
+	このシステムを作った目的は、Go言語の勉強の為にまず始めに、簡単なシステムを作ってみようと思い作りました。
+	自分は主にJavaしか勉強していなかった為、Javaに寄った様なコード。また、Go言語の特性などを生かせてないコードになっていると思うので、
+	その辺りもレビューして頂けると幸いです。
+*/
+
 package main
 
 import (
@@ -5,6 +14,7 @@ import (
 	"fmt"
 	"os"
 )
+
 
 const (
 	bottleCapacityMl 	int = 20000
@@ -66,9 +76,9 @@ func drainWater(waterTemperatur string){
 	}
 }
 
-//水量チェック　水が少なかったら補充を促す
+//水量チェック　水が空だったら補充を促す
 func checkWaterAmount(){
-	if currentBottoleAmountMl < 200 {
+	if currentBottoleAmountMl <= 0 {
 		for {
 			fmt.Println("水を補充して下さい。")
 			fmt.Println("補充が完了したら「１」を入力して下さい。")
