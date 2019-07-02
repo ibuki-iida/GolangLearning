@@ -14,18 +14,18 @@ const (
 )
 
 type waterAmount struct {
-	currentBottoleAmountMl int
-	currentHotAmountMl     int
-	currentColdAmountMl    int
+	currentRefillBottoleAmountMl int
+	currentHotTankAmountMl       int
+	currentColdTankAmountMl      int
 }
 
 //水の準備　フィールドにある変数に水を入れる
 func prepareWater(wa *waterAmount) {
 	changeBottle(wa)
-	wa.currentBottoleAmountMl -= wa.currentHotAmountMl
-	wa.currentHotAmountMl += maxHotCapacityMl
-	wa.currentBottoleAmountMl -= wa.currentColdAmountMl
-	wa.currentColdAmountMl += maxColdCapacityMl
+	wa.currentRefillBottoleAmountMl -= wa.currentHotTankAmountMl
+	wa.currentHotTankAmountMl += maxHotCapacityMl
+	wa.currentRefillBottoleAmountMl -= wa.currentColdTankAmountMl
+	wa.currentColdTankAmountMl += maxColdCapacityMl
 
 }
 
@@ -51,24 +51,27 @@ func scanWithRestrictions(useStrings ...string) (string, bool) {
 
 //ボトルを交換する
 func changeBottle(wa *waterAmount) {
-	wa.currentBottoleAmountMl = bottleCapacityMl
+	wa.currentRefillBottoleAmountMl = bottleCapacityMl
 }
 
 //水を出す
 func drainWater(waterTemperatur string, wa *waterAmount) {
 	switch waterTemperatur {
 	case "1":
-		wa.currentColdAmountMl -= waterOutAmountMl
-		wa.currentBottoleAmountMl -= waterOutAmountMl
+		wa.currentColdTankAmountMl -= waterOutAmountMl
+		wa.currentRefillBottoleAmountMl -= waterOutAmountMl
+		wa.currentColdTankAmountMl += waterOutAmountMl
 	case "2":
-		wa.currentHotAmountMl -= waterOutAmountMl
-		wa.currentBottoleAmountMl -= waterOutAmountMl
+		wa.currentHotTankAmountMl -= waterOutAmountMl
+		wa.currentRefillBottoleAmountMl -= waterOutAmountMl
+		wa.currentHotTankAmountMl += waterOutAmountMl
 	}
+
 }
 
 //水量チェック　水が空だったら補充を促す
-func checkWaterAmount(wa *waterAmount) {
-	if wa.currentBottoleAmountMl <= 0 {
+func checkWaterAmountAndRefill(wa *waterAmount) {
+	if wa.currentRefillBottoleAmountMl <= 0 {
 		for {
 			fmt.Println("水を補充して下さい。")
 			fmt.Println("補充が完了したら「１」を入力して下さい。")
@@ -84,7 +87,7 @@ func checkWaterAmount(wa *waterAmount) {
 
 //水量の表示
 func printWatereAmount(wa *waterAmount) {
-	fmt.Printf("ボトルの残量は%vmlです。\n", wa.currentBottoleAmountMl)
+	fmt.Printf("ボトルの残量は%vmlです。\n", wa.currentRefillBottoleAmountMl)
 }
 
 func main() {
@@ -92,7 +95,7 @@ func main() {
 	//水を準備
 	prepareWater(wa)
 	for {
-		checkWaterAmount(wa)
+		checkWaterAmountAndRefill(wa)
 		printWatereAmount(wa)
 		fmt.Println("冷たい水の場合は[1]を、熱いお湯の場合は[2]を入力して下さい。")
 		rawInputStr := []string{"1", "2"}
